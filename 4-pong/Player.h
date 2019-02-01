@@ -2,7 +2,7 @@
 #include "Gravity.h"
 class Player
 {
-private: 
+private:
 	int id;
 	Gravity gravity;
 
