@@ -5,6 +5,9 @@
 #include "glad/glad.h"
 #include <GLFW/glfw3.h>
 #include <iostream>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 using namespace std;
 
@@ -16,9 +19,11 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 
 const char *vertexShaderSource = "#version 140\n"
 "in vec3 aPos;\n"
+"in vec2 aTexCoord;\n"
+"uniform mat4 transform;\n"
 "void main()\n"
 "{\n"
-"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+"   gl_Position = transform * vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
 "}\0";
 
 const char *fragmentShaderSource = "#version 140\n"
@@ -27,6 +32,8 @@ const char *fragmentShaderSource = "#version 140\n"
 "{\n"
 "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
 "}\n\0";
+
+glm::mat4 trans = glm::mat4(1.0f);
 
 void compile_vertex_shader(unsigned int &vertex_shader)
 {
@@ -87,6 +94,10 @@ void processInput(GLFWwindow *window)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
+	else if(glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+		trans = glm::translate(trans, glm::vec3(0, 0.0005, 0));
+	else if(glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+		trans = glm::translate(trans, glm::vec3(0, -0.0005, 0));
 }
 
 int main()
@@ -138,6 +149,7 @@ int main()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOs[0]);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+
 	glEnableVertexAttribArray(0);
 
 
@@ -153,6 +165,10 @@ int main()
 	glBindVertexArray(0);
 
 
+	
+	//trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
+	
+
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -165,6 +181,8 @@ int main()
 
 		glUseProgram(shader_program);
 		glBindVertexArray(VAOs[0]);
+		unsigned int transformLoc = glGetUniformLocation(shader_program, "transform");
+		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 		glBindVertexArray(VAOs[1]);
