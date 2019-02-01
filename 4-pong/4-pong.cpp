@@ -30,9 +30,12 @@ const char *fragmentShaderSource = "#version 140\n"
 "out vec4 FragColor;\n"
 "void main()\n"
 "{\n"
-"   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+"   FragColor = vec4(0.0f, 0.0f, 1.0f, 1.0f);\n"
 "}\n\0";
 
+
+double last_time = glfwGetTime();
+const glm::vec3 speed = glm::vec3(0.0f, 0.9f, 0.0f);
 glm::mat4 trans = glm::mat4(1.0f);
 
 void compile_vertex_shader(unsigned int &vertex_shader)
@@ -92,12 +95,20 @@ void link_shaders(const unsigned int &vertex_shader, const unsigned int &fragmen
 
 void processInput(GLFWwindow *window)
 {
+	double current_time = glfwGetTime();
+	double delta = current_time - last_time;
+
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
-	else if(glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-		trans = glm::translate(trans, glm::vec3(0, 0.0005, 0));
-	else if(glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-		trans = glm::translate(trans, glm::vec3(0, -0.0005, 0));
+	else if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
+		trans = glm::translate(trans, glm::vec3(0, speed.y * delta, 0));
+	}
+	else if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+		trans = glm::translate(trans, glm::vec3(0, - speed.y * delta, 0));
+	}
+
+	last_time = current_time;
+	
 }
 
 int main()
@@ -188,8 +199,12 @@ int main()
 		glBindVertexArray(VAOs[1]);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
+
+
 		glfwSwapBuffers(window);
 		glfwPollEvents();
+
+
 	}
 
 	glDeleteVertexArrays(2, VAOs);
