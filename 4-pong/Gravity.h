@@ -1,4 +1,4 @@
 
 enum Gravity {
-	TOP, LEFT, RIGHT, BOTTOM;
+	TOP, LEFT, RIGHT, BOTTOM
 };

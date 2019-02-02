@@ -4,6 +4,8 @@
 #include "4-pong.h"
 #include "glad/glad.h"
 #include <GLFW/glfw3.h>
+#include "static.h"
+#include "Player.h"
 #include <iostream>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -30,13 +32,12 @@ const char *fragmentShaderSource = "#version 140\n"
 "out vec4 FragColor;\n"
 "void main()\n"
 "{\n"
-"   FragColor = vec4(0.0f, 0.0f, 1.0f, 1.0f);\n"
+"   FragColor = vec4(0.5f, 0.75f, 0.25f, 1.0f);\n"
 "}\n\0";
 
 
 double last_time = glfwGetTime();
 const glm::vec3 speed = glm::vec3(0.0f, 0.9f, 0.0f);
-glm::mat4 trans = glm::mat4(1.0f);
 
 void compile_vertex_shader(unsigned int &vertex_shader)
 {
@@ -95,27 +96,28 @@ void link_shaders(const unsigned int &vertex_shader, const unsigned int &fragmen
 
 void processInput(GLFWwindow *window)
 {
-	double current_time = glfwGetTime();
-	double delta = current_time - last_time;
-
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
-	else if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
-		trans = glm::translate(trans, glm::vec3(0, speed.y * delta, 0));
+}
+
+int processMovement(GLFWwindow *window)
+{
+
+	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
+		return 1;
 	}
 	else if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
-		trans = glm::translate(trans, glm::vec3(0, - speed.y * delta, 0));
+		return -1;
 	}
-
-	last_time = current_time;
-	
+	else {
+		return 0;
+	}
 }
+
 
 int main()
 {
-
 	glfwInit();
-
 
 	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "4 Pong", NULL, NULL);
 	if (window == NULL)
@@ -147,69 +149,46 @@ int main()
 	glDeleteShader(fragment_shader);
 
 
-	unsigned int VBOs[2], VAOs[2], EBOs[2];
-
-	glGenVertexArrays(2, VAOs);
-	glGenBuffers(2, VBOs);
-	glGenBuffers(2, EBOs);
-
-
-	glBindVertexArray(VAOs[0]);
-	glBindBuffer(GL_ARRAY_BUFFER, VBOs[0]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(LEFT_DEFAULT_VERTICES), LEFT_DEFAULT_VERTICES, GL_STATIC_DRAW);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOs[0]);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-
-	glEnableVertexAttribArray(0);
+	Player top = Player("TOP", TOP_DEFAULT_VERTICES, shader_program);
+	Player bot = Player("BOT", BOTTOM_DEFAULT_VERTICES, shader_program);
+	Player left = Player("LEFT", LEFT_DEFAULT_VERTICES, shader_program);
+	Player right = Player("RIGHT", RIGHT_DEFAULT_VERTICES, shader_program);
 
 
-	glBindVertexArray(VAOs[1]);
-	glBindBuffer(GL_ARRAY_BUFFER, VBOs[1]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(RIGHT_DEFAULT_VERTICES), RIGHT_DEFAULT_VERTICES, GL_STATIC_DRAW);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOs[1]);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-
-	glEnableVertexAttribArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
-
-
-	
-	//trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
-	
-
+	double time;
+	int move;
 
 	while (!glfwWindowShouldClose(window))
 	{
 
 		processInput(window);
+		move = processMovement(window);
 
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
 
 		glUseProgram(shader_program);
-		glBindVertexArray(VAOs[0]);
-		unsigned int transformLoc = glGetUniformLocation(shader_program, "transform");
-		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-		glBindVertexArray(VAOs[1]);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		time = glfwGetTime();
+		
 
 
+		left.draw(time, move);
+		right.draw(time, 0);
+		top.draw(time, 0);
+		bot.draw(time, 0);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
-
-
 	}
 
-	glDeleteVertexArrays(2, VAOs);
-	glDeleteBuffers(2, VBOs);
-	glDeleteBuffers(2, EBOs);
+
+	left.~Player();
+	right.~Player();
+	top.~Player();
+	bot.~Player();
+
 	glfwTerminate();
 	return 0;
 }
