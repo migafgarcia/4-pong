@@ -2,8 +2,8 @@
 #pragma once
 #include <glm/glm.hpp>
 
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 800;
+const unsigned int SCR_WIDTH = 200;
+const unsigned int SCR_HEIGHT = 200;
 
 const unsigned int INDICES[] = {
 		0, 1, 3,

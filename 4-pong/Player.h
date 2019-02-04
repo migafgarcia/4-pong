@@ -1,32 +1,43 @@
+//
+// Created by migafgarcia on 04-02-2019.
+//
 
+#ifndef INC_4_PONG_PLAYER_H
+#define INC_4_PONG_PLAYER_H
+
+#include <glm/gtc/type_ptr.hpp>
+
+#include "GameObject.h"
 #include "Gravity.h"
 #include "glad/glad.h"
 #include "static.h"
-#include <iostream>
-#include <GLFW/glfw3.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/type_ptr.hpp>
 
 
 
-class Player
-{
-	std::string name;
-	glm::vec3 speed;
-	glm::mat4 trans;
-	unsigned int VBO, VAO, EBO, PROGRAM;
-	const float* vertices;
-	
-	double last_time;
 
-	void init_buffer_data();
+class Player: public GameObject {
+private:
+    const float* vertices;
+    Gravity gravity;
 
 public:
 
-	Player(std::string, const float *, unsigned int &);
+    Player(glm::vec2 &position, glm::vec2 &direction, float speed, unsigned int PROGRAM, const float* vertices);
 
-	~Player();
+    void init_buffer_data() override;
 
-	void draw(const double&, const int&);
+    void delete_buffer_data() override;
 
+    void update_position(float, float) override;
+
+    void update_direction(float, float) override;
+
+    void update_speed(float s) override;
+
+    void draw(double& delta) override;
+
+    ~Player() override;
 };
+
+
+#endif //INC_4_PONG_PLAYER_H
