@@ -8,33 +8,33 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "GameObject.h"
+#include "Ball.h"
 #include "Gravity.h"
 #include "glad/glad.h"
 #include "static.h"
 
-
-
-
 class Player: public GameObject {
 private:
-    const float* vertices;
     Gravity gravity;
+
 
 public:
 
-    Player(glm::vec2 &position, glm::vec2 &direction, float speed, unsigned int PROGRAM, const float* vertices);
+    Player(glm::highp_dvec2 &position, glm::highp_dvec2 &direction, Gravity gravity, float speed, unsigned int PROGRAM);
 
     void init_buffer_data() override;
 
     void delete_buffer_data() override;
 
-    void update_position(float, float) override;
+    void update_position(double, double) override;
 
-    void update_direction(float, float) override;
+    void update_position(double &d) override;
 
-    void update_speed(float s) override;
+    void update_direction(double, double) override;
 
-    void draw(double& delta) override;
+    void update_speed(double s) override;
+
+    void draw() override;
 
     ~Player() override;
 };

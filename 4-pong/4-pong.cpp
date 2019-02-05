@@ -3,10 +3,12 @@
 
 #include "4-pong.h"
 #include "glad/glad.h"
-#include <GLFW/glfw3.h>
 #include "static.h"
 #include "Player.h"
 #include "Ball.h"
+#include "Gravity.h"
+
+#include <GLFW/glfw3.h>
 #include <iostream>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -139,18 +141,21 @@ int main() {
     glDeleteShader(fragment_shader);
 
 
-    Player left = Player(glm::vec2(0,0), glm::vec2(0,0), 0.0f, shader_program, LEFT_DEFAULT_VERTICES);
-    Player right = Player(glm::vec2(0,0), glm::vec2(0,0), 0.0f, shader_program, RIGHT_DEFAULT_VERTICES);
-    Ball ball = Ball(glm::vec2(0,0), glm::vec2(0,0), 0.0f, shader_program);
+    Player left = Player(glm::highp_dvec2(-0.95f, 0), glm::highp_dvec2(0, 0), VERTICAL, 1.0f, shader_program);
 
-    left.init_buffer_data();
-    right.init_buffer_data();
-    ball.init_buffer_data();
+    Player right = Player(glm::highp_dvec2(0.95f,0), glm::highp_dvec2(0,0), VERTICAL, 1.0f, shader_program);
+    Ball ball = Ball(glm::highp_dvec2(0, 0), glm::highp_dvec2(-1.0f, 0.9f), 1.0f, shader_program);
 
-    left.update_speed(1);
 
-    ball.update_speed(1);
-    ball.update_direction(-1.0f, 0.0f);
+    vector<GameObject *> objects;
+
+    objects.push_back(&right);
+    objects.push_back(&left);
+    objects.push_back(&ball);
+
+    for (GameObject *object: objects) {
+        object->init_buffer_data();
+    }
 
 
     double last_time = glfwGetTime();
@@ -170,11 +175,35 @@ int main() {
         double delta = time - last_time;
 
         left.update_direction(0.0f, move);
+        right.update_direction(0.0f, move);
 
 
-        ball.draw(delta);
-        right.draw(delta);
-        left.draw(delta);
+        for (GameObject *object: objects) {
+            object->update_position(delta);
+
+            bool x_bounds = object->check_x_bounds();
+            bool y_bounds = object->check_y_bounds();
+
+            if (Player *p = dynamic_cast<Player *>(object)) {
+
+                bool collision = p->check_collision(ball);
+                if(collision)
+                    ball.invert_x_direction();
+
+
+
+
+            } else if (Ball *b = dynamic_cast<Ball *>(object)) {
+                if(x_bounds)
+                    b->update_position(0, 0);
+                if(y_bounds)
+                    b->invert_y_direction();
+
+            }
+
+            object->draw();
+        }
+
 
         last_time = time;
 
@@ -182,9 +211,9 @@ int main() {
         glfwPollEvents();
     }
 
-    ball.delete_buffer_data();
-    left.delete_buffer_data();
-    right.delete_buffer_data();
+    for (GameObject *object: objects) {
+        object->delete_buffer_data();
+    }
 
     glfwTerminate();
     return 0;

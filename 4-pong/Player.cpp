@@ -2,13 +2,12 @@
 #include "Player.h"
 #include <iostream>
 
-Player::Player(glm::vec2 &position, glm::vec2 &direction, float speed, unsigned int PROGRAM, const float *vertices)
+Player::Player(glm::highp_dvec2 &position, glm::highp_dvec2 &direction, Gravity gravity, float speed, unsigned int PROGRAM)
         : GameObject(position,
+                     glm::highp_dvec2(0.03f, 0.25f),
                      direction,
                      speed,
-                     PROGRAM), vertices{vertices} {
-
-}
+                     PROGRAM), gravity{gravity}{}
 
 void Player::init_buffer_data() {
     glGenVertexArrays(1, &VAO);
@@ -17,7 +16,7 @@ void Player::init_buffer_data() {
 
     glBindVertexArray(VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, 12 * sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, 12 * sizeof(VERTICES), VERTICES, GL_STATIC_DRAW);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(INDICES), INDICES, GL_STATIC_DRAW);
@@ -34,36 +33,24 @@ void Player::delete_buffer_data() {
     glDeleteBuffers(1, &EBO);
 }
 
-void Player::update_position(float x, float y) {
+void Player::update_position(double x, double y) {
     position.x = x;
     position.y = y;
 }
 
-void Player::update_direction(float x, float y) {
+void Player::update_direction(double x, double y) {
     direction.x = x;
     direction.y = y;
 }
 
-void Player::update_speed(float s) {
+void Player::update_speed(double s) {
     speed = s;
 }
 
-void Player::draw(double &delta) {
-
-    position.x += direction.x * speed * delta;
-    position.y += direction.y * speed * delta;
-
-    position.y = (position.y < 0.75f) ? position.y : 0.75f;
-    position.y = (position.y > -0.75f) ? position.y : -0.75f;
-    position.x = (position.x > -0.75f) ? position.x : -0.75f;
-    position.x = (position.x > -0.75f) ? position.x : -0.75f;
-
-
-    std::cout << position.x << ", " << position.y << std::endl;
-
-
+void Player::draw() {
     glm::mat4 trans = glm::mat4(1.0f);
     trans = glm::translate(trans, glm::vec3(position, 0.0f));
+    trans = glm::scale(trans, glm::vec3(size, 1.0f));
 
     int transformLoc = glGetUniformLocation(PROGRAM, "transform");
     glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
@@ -75,3 +62,9 @@ void Player::draw(double &delta) {
 Player::~Player() {
 
 }
+
+void Player::update_position(double &d) {
+    position.x += direction.x * speed * d;
+    position.y += direction.y * speed * d;
+}
+

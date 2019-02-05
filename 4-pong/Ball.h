@@ -10,29 +10,23 @@
 
 class Ball: public GameObject {
 
-private:
-    const float vertices[12] = {
-            0.05f, 0.05f, 0.0f,  // top right
-            0.05f, -0.05f, 0.0f,  // bottom right
-            -0.05f, -0.05f, 0.0f,  // bottom left
-            -0.05f,  0.05f, 0.0f   // top left
-    };
-
 public:
 
-    Ball(glm::vec2 &position, glm::vec2 &direction, float speed, unsigned int PROGRAM);
+    Ball(glm::highp_dvec2 &position, glm::highp_dvec2 &direction, float speed, unsigned int PROGRAM);
 
     void init_buffer_data() override;
 
     void delete_buffer_data() override;
 
-    void update_position(float, float) override;
+    void update_position(double, double) override;
 
-    void update_direction(float, float) override;
+    void update_position(double &d) override;
 
-    void update_speed(float s) override;
+    void update_direction(double, double) override;
 
-    void draw(double &delta) override;
+    void update_speed(double s) override;
+
+    void draw() override;
 
     ~Ball() override;
 };

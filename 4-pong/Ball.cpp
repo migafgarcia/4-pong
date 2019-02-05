@@ -8,7 +8,7 @@ void Ball::init_buffer_data() {
 
     glBindVertexArray(VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, 12 * sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, 12 * sizeof(VERTICES), VERTICES, GL_STATIC_DRAW);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(INDICES), INDICES, GL_STATIC_DRAW);
@@ -25,44 +25,24 @@ void Ball::delete_buffer_data() {
     glDeleteBuffers(1, &EBO);
 }
 
-void Ball::update_position(float x, float y) {
+void Ball::update_position(double x, double y) {
     position.x = x;
     position.y = y;
 }
 
-void Ball::update_direction(float x, float y) {
+void Ball::update_direction(double x, double y) {
     direction.x = x;
     direction.y = y;
 }
 
-void Ball::update_speed(float s) {
+void Ball::update_speed(double s) {
     speed = s;
 }
 
-void Ball::draw(double &delta) {
-
-    position.x += direction.x * speed * delta;
-    position.y += direction.y * speed * delta;
-
-    position.y = (position.y < 0.95f) ? position.y : 0.95f;
-    position.y = (position.y > -0.95f) ? position.y : -0.95f;
-    position.x = (position.x > -0.95f) ? position.x : -0.95f;
-    position.x = (position.x > -0.95f) ? position.x : -0.95f;
-
-    if(position.x >= 0.95f || position.x <= -0.95f) {
-        direction.x = -direction.x;
-        position.x += direction.x * speed * delta;
-
-    }
-
-    if(position.y >= 0.95f || position.y <= -0.95f) {
-        direction.y = -direction.y;
-        position.y += direction.y * speed * delta;
-
-    }
-
+void Ball::draw() {
     glm::mat4 trans = glm::mat4(0.95f);
     trans = glm::translate(trans, glm::vec3(position, 0.0f));
+    trans = glm::scale(trans, glm::vec3(size, 1.0f));
 
     int transformLoc = glGetUniformLocation(PROGRAM, "transform");
     glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
@@ -71,12 +51,19 @@ void Ball::draw(double &delta) {
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }
 
-Ball::Ball(glm::vec2 &position, glm::vec2 &direction, float speed, unsigned int PROGRAM) : GameObject(position,
-                                                                                                      direction, speed,
-                                                                                                      PROGRAM) {}
+Ball::Ball(glm::highp_dvec2 &position, glm::highp_dvec2 &direction, float speed, unsigned int PROGRAM) : GameObject(
+        position,
+        glm::highp_dvec2(0.05f, 0.05f),
+        direction, speed,
+        PROGRAM) {}
 
 Ball::~Ball() {
 
+}
+
+void Ball::update_position(double &d) {
+    position.x += direction.x * speed * d;
+    position.y += direction.y * speed * d;
 }
 
 
