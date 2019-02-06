@@ -2,11 +2,12 @@
 //
 
 #include "4-pong.h"
-#include "glad/glad.h"
+#include <glad/glad.h>
 #include "static.h"
 #include "Player.h"
 #include "Ball.h"
 #include "Gravity.h"
+#include "shaders/Shaders.h"
 
 #include <GLFW/glfw3.h>
 #include <iostream>
@@ -139,6 +140,8 @@ int main() {
 
     glDeleteShader(vertex_shader);
     glDeleteShader(fragment_shader);
+
+    Shaders::program_shader = shader_program;
 
 
     Player left = Player(glm::highp_dvec2(-0.95f, 0), glm::highp_dvec2(0, 0), VERTICAL, 1.0f, shader_program);

@@ -1,16 +1,13 @@
-//
-// Created by migafgarcia on 04-02-2019.
-//
 
-#ifndef INC_4_PONG_PLAYER_H
-#define INC_4_PONG_PLAYER_H
+
+#pragma once
 
 #include <glm/gtc/type_ptr.hpp>
 
 #include "GameObject.h"
 #include "Ball.h"
 #include "Gravity.h"
-#include "glad/glad.h"
+#include <glad/glad.h>
 #include "static.h"
 
 class Player: public GameObject {
@@ -38,6 +35,3 @@ public:
 
     ~Player() override;
 };
-
-
-#endif //INC_4_PONG_PLAYER_H

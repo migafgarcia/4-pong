@@ -3,11 +3,10 @@
 #
 cmake_minimum_required (VERSION 3.8)
 
-include_directories("glad")
-include_directories("KHR")
 # Add source to this project's executable.
-add_executable (4-pong "4-pong.cpp" "glad.c" Ball.cpp Ball.h Player.cpp Player.h GameObject.cpp GameObject.h)
+add_executable (4-pong 4-pong.cpp Ball.cpp Ball.h Player.cpp Player.h GameObject.cpp GameObject.h shaders/Shaders.h)
 
 # TODO: Add tests and install targets if needed.
 target_link_libraries(4-pong glfw)
 target_link_libraries(4-pong glm)
+target_link_libraries(4-pong glad)

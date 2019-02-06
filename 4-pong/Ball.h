@@ -1,11 +1,10 @@
 
-#ifndef INC_4_PONG_BALL_H
-#define INC_4_PONG_BALL_H
+#pragma once
 
 #include <glm/gtc/type_ptr.hpp>
 
 #include "GameObject.h"
-#include "glad/glad.h"
+#include <glad/glad.h>
 #include "static.h"
 
 class Ball: public GameObject {
@@ -30,6 +29,3 @@ public:
 
     ~Ball() override;
 };
-
-
-#endif //INC_4_PONG_BALL_H
