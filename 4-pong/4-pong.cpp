@@ -39,13 +39,9 @@ const char *fragmentShaderSource = "#version 140\n"
                                    "   FragColor = vec4(0.5f, 0.75f, 0.25f, 1.0f);\n"
                                    "}\n\0";
 
-
-double last_time = glfwGetTime();
-const glm::vec3 speed = glm::vec3(0.0f, 0.9f, 0.0f);
-
 void compile_vertex_shader(unsigned int &vertex_shader) {
     vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertex_shader, 1, &vertexShaderSource, NULL);
+    glShaderSource(vertex_shader, 1, &vertexShaderSource, nullptr);
     glCompileShader(vertex_shader);
 
     int success;
@@ -53,7 +49,7 @@ void compile_vertex_shader(unsigned int &vertex_shader) {
     glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
 
     if (!success) {
-        glGetShaderInfoLog(vertex_shader, 512, NULL, infoLog);
+        glGetShaderInfoLog(vertex_shader, 512, nullptr, infoLog);
         std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
     }
 
@@ -61,7 +57,7 @@ void compile_vertex_shader(unsigned int &vertex_shader) {
 
 void compile_fragment_shader(unsigned int &fragment_shader) {
     fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragment_shader, 1, &fragmentShaderSource, NULL);
+    glShaderSource(fragment_shader, 1, &fragmentShaderSource, nullptr);
     glCompileShader(fragment_shader);
 
     int success;
@@ -69,7 +65,7 @@ void compile_fragment_shader(unsigned int &fragment_shader) {
     glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &success);
 
     if (!success) {
-        glGetShaderInfoLog(fragment_shader, 512, NULL, infoLog);
+        glGetShaderInfoLog(fragment_shader, 512, nullptr, infoLog);
         std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
     }
 }
@@ -89,7 +85,7 @@ link_shaders(const unsigned int &vertex_shader, const unsigned int &fragment_sha
     glGetShaderiv(shader_program, GL_COMPILE_STATUS, &success);
 
     if (!success) {
-        glGetShaderInfoLog(shader_program, 512, NULL, infoLog);
+        glGetShaderInfoLog(shader_program, 512, nullptr, infoLog);
         std::cout << "ERROR::SHADER::PROGRAM::COMPILATION_FAILED\n" << infoLog << std::endl;
     }
 }
@@ -111,11 +107,27 @@ int processMovement(GLFWwindow *window) {
 }
 
 
+void compile_shaders() {
+    unsigned int vertex_shader;
+    compile_vertex_shader(vertex_shader);
+
+    unsigned int fragment_shader;
+    compile_fragment_shader(fragment_shader);
+
+    unsigned int shader_program;
+    link_shaders(vertex_shader, fragment_shader, shader_program);
+
+    Shaders::program_shader = shader_program;
+
+    glDeleteShader(vertex_shader);
+    glDeleteShader(fragment_shader);
+}
+
 int main() {
     glfwInit();
 
-    GLFWwindow *window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "4 Pong", NULL, NULL);
-    if (window == NULL) {
+    GLFWwindow *window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "4 Pong", nullptr, nullptr);
+    if (window == nullptr) {
         std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
         return -1;
@@ -129,25 +141,12 @@ int main() {
         return -1;
     }
 
-    unsigned int vertex_shader;
-    compile_vertex_shader(vertex_shader);
+    compile_shaders();
 
-    unsigned int fragment_shader;
-    compile_fragment_shader(fragment_shader);
+    Player left = Player(glm::highp_dvec2(-0.95f, 0), glm::highp_dvec2(0, 0), VERTICAL, 1.0f);
 
-    unsigned int shader_program;
-    link_shaders(vertex_shader, fragment_shader, shader_program);
-
-    glDeleteShader(vertex_shader);
-    glDeleteShader(fragment_shader);
-
-    Shaders::program_shader = shader_program;
-
-
-    Player left = Player(glm::highp_dvec2(-0.95f, 0), glm::highp_dvec2(0, 0), VERTICAL, 1.0f, shader_program);
-
-    Player right = Player(glm::highp_dvec2(0.95f,0), glm::highp_dvec2(0,0), VERTICAL, 1.0f, shader_program);
-    Ball ball = Ball(glm::highp_dvec2(0, 0), glm::highp_dvec2(-1.0f, 0.9f), 1.0f, shader_program);
+    Player right = Player(glm::highp_dvec2(0.95f,0), glm::highp_dvec2(0,0), VERTICAL, 1.0f);
+    Ball ball = Ball(glm::highp_dvec2(0, 0), glm::highp_dvec2(-1.0f, 0.9f), 1.0f);
 
 
     vector<GameObject *> objects;
@@ -172,7 +171,7 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT);
 
 
-        glUseProgram(shader_program);
+        glUseProgram(Shaders::program_shader);
 
         double time = glfwGetTime();
         double delta = time - last_time;

@@ -11,7 +11,7 @@ class Ball: public GameObject {
 
 public:
 
-    Ball(glm::highp_dvec2 &position, glm::highp_dvec2 &direction, float speed, unsigned int PROGRAM);
+    Ball(glm::highp_dvec2 &position, glm::highp_dvec2 &direction, float speed);
 
     void init_buffer_data() override;
 

@@ -17,7 +17,7 @@ private:
 
 public:
 
-    Player(glm::highp_dvec2 &position, glm::highp_dvec2 &direction, Gravity gravity, float speed, unsigned int PROGRAM);
+    Player(glm::highp_dvec2 &position, glm::highp_dvec2 &direction, Gravity gravity, float speed);
 
     void init_buffer_data() override;
 

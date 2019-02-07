@@ -1,13 +1,13 @@
 
 #include "Player.h"
+#include "shaders/Shaders.h"
 #include <iostream>
 
-Player::Player(glm::highp_dvec2 &position, glm::highp_dvec2 &direction, Gravity gravity, float speed, unsigned int PROGRAM)
+Player::Player(glm::highp_dvec2 &position, glm::highp_dvec2 &direction, Gravity gravity, float speed)
         : GameObject(position,
                      glm::highp_dvec2(0.03f, 0.25f),
                      direction,
-                     speed,
-                     PROGRAM), gravity{gravity}{}
+                     speed), gravity{gravity}{}
 
 void Player::init_buffer_data() {
     glGenVertexArrays(1, &VAO);
@@ -52,7 +52,7 @@ void Player::draw() {
     trans = glm::translate(trans, glm::vec3(position, 0.0f));
     trans = glm::scale(trans, glm::vec3(size, 1.0f));
 
-    int transformLoc = glGetUniformLocation(PROGRAM, "transform");
+    int transformLoc = glGetUniformLocation(Shaders::program_shader, "transform");
     glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
 
     glBindVertexArray(VAO);
