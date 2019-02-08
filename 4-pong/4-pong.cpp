@@ -23,73 +23,6 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
     glViewport(0, 0, width, height);
 }
 
-const char *vertexShaderSource = "#version 140\n"
-                                 "in vec3 aPos;\n"
-                                 "in vec2 aTexCoord;\n"
-                                 "uniform mat4 transform;\n"
-                                 "void main()\n"
-                                 "{\n"
-                                 "   gl_Position = transform * vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-                                 "}\0";
-
-const char *fragmentShaderSource = "#version 140\n"
-                                   "out vec4 FragColor;\n"
-                                   "void main()\n"
-                                   "{\n"
-                                   "   FragColor = vec4(0.5f, 0.75f, 0.25f, 1.0f);\n"
-                                   "}\n\0";
-
-void compile_vertex_shader(unsigned int &vertex_shader) {
-    vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertex_shader, 1, &vertexShaderSource, nullptr);
-    glCompileShader(vertex_shader);
-
-    int success;
-    char infoLog[512];
-    glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
-
-    if (!success) {
-        glGetShaderInfoLog(vertex_shader, 512, nullptr, infoLog);
-        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
-    }
-
-}
-
-void compile_fragment_shader(unsigned int &fragment_shader) {
-    fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragment_shader, 1, &fragmentShaderSource, nullptr);
-    glCompileShader(fragment_shader);
-
-    int success;
-    char infoLog[512];
-    glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &success);
-
-    if (!success) {
-        glGetShaderInfoLog(fragment_shader, 512, nullptr, infoLog);
-        std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
-    }
-}
-
-void
-link_shaders(const unsigned int &vertex_shader, const unsigned int &fragment_shader, unsigned int &shader_program) {
-
-    shader_program = glCreateProgram();
-
-    glAttachShader(shader_program, vertex_shader);
-    glAttachShader(shader_program, fragment_shader);
-    glLinkProgram(shader_program);
-
-
-    int success;
-    char infoLog[512];
-    glGetShaderiv(shader_program, GL_COMPILE_STATUS, &success);
-
-    if (!success) {
-        glGetShaderInfoLog(shader_program, 512, nullptr, infoLog);
-        std::cout << "ERROR::SHADER::PROGRAM::COMPILATION_FAILED\n" << infoLog << std::endl;
-    }
-}
-
 void processInput(GLFWwindow *window) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
@@ -104,23 +37,6 @@ int processMovement(GLFWwindow *window) {
     } else {
         return 0;
     }
-}
-
-
-void compile_shaders() {
-    unsigned int vertex_shader;
-    compile_vertex_shader(vertex_shader);
-
-    unsigned int fragment_shader;
-    compile_fragment_shader(fragment_shader);
-
-    unsigned int shader_program;
-    link_shaders(vertex_shader, fragment_shader, shader_program);
-
-    Shaders::program_shader = shader_program;
-
-    glDeleteShader(vertex_shader);
-    glDeleteShader(fragment_shader);
 }
 
 int main() {
@@ -141,11 +57,10 @@ int main() {
         return -1;
     }
 
-    compile_shaders();
+    Shaders::load_built_in_shaders();
 
     Player left = Player(glm::highp_dvec2(-0.95f, 0), glm::highp_dvec2(0, 0), VERTICAL, 1.0f);
-
-    Player right = Player(glm::highp_dvec2(0.95f,0), glm::highp_dvec2(0,0), VERTICAL, 1.0f);
+    Player right = Player(glm::highp_dvec2(0.95f, 0), glm::highp_dvec2(0, 0), VERTICAL, 1.0f);
     Ball ball = Ball(glm::highp_dvec2(0, 0), glm::highp_dvec2(-1.0f, 0.9f), 1.0f);
 
 
@@ -158,7 +73,6 @@ int main() {
     for (GameObject *object: objects) {
         object->init_buffer_data();
     }
-
 
     double last_time = glfwGetTime();
 
@@ -189,16 +103,13 @@ int main() {
             if (Player *p = dynamic_cast<Player *>(object)) {
 
                 bool collision = p->check_collision(ball);
-                if(collision)
+                if (collision) {
                     ball.invert_x_direction();
-
-
-
-
+                }
             } else if (Ball *b = dynamic_cast<Ball *>(object)) {
-                if(x_bounds)
+                if (x_bounds)
                     b->update_position(0, 0);
-                if(y_bounds)
+                if (y_bounds)
                     b->invert_y_direction();
 
             }
