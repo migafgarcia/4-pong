@@ -1,6 +1,11 @@
 #pragma once
 
+#include "shaders/Shaders.h"
+#include "static.h"
+
 #include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glad/glad.h>
 
 class GameObject {
 
@@ -17,13 +22,13 @@ public:
     GameObject(glm::highp_dvec2 &position, glm::highp_dvec2 &size, glm::highp_dvec2 &direction, float speed) : position(
             position), size(size), direction(direction), speed(speed) {}
 
-    virtual void init_buffer_data() = 0;
-    virtual void delete_buffer_data() = 0;
-    virtual void update_position(double, double) = 0;
-    virtual void update_position(double &) = 0;
-    virtual void update_direction(double, double) = 0;
-    virtual void update_speed(double) = 0;
-	virtual void draw() = 0;
+    void init_buffer_data();
+    void delete_buffer_data();
+    void update_position(double x, double y);
+    void update_position(double &delta);
+    void update_direction(double x, double y);
+    void update_speed(double s);
+	void draw();
 	virtual ~GameObject() {};
 
     bool check_x_bounds();

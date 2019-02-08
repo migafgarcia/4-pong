@@ -13,19 +13,5 @@ public:
 
     Ball(glm::highp_dvec2 &position, glm::highp_dvec2 &direction, float speed);
 
-    void init_buffer_data() override;
-
-    void delete_buffer_data() override;
-
-    void update_position(double, double) override;
-
-    void update_position(double &d) override;
-
-    void update_direction(double, double) override;
-
-    void update_speed(double s) override;
-
-    void draw() override;
-
     ~Ball() override;
 };
