@@ -1,7 +1,7 @@
 
 #include "PaddleController.h"
 
-PlayerController::PlayerController(int id) : Controller(id) {
+PaddleController::PaddleController(int id) : Controller(id) {
     speed = 1.0f;
 
     if (id == 1) {
@@ -20,7 +20,7 @@ PlayerController::PlayerController(int id) : Controller(id) {
         throw "Invalid player id";
 }
 
-void PlayerController::move(int move, double delta) {
+void PaddleController::move(int move, double delta) {
     double d = move * direction;
     gameObject->position.x += cos(d) * speed * delta;
     gameObject->position.y += sin(d) * speed * delta;

@@ -9,10 +9,10 @@
 #include "Controller.h"
 #include "../Gravity.h"
 
-class PlayerController : public Controller {
+class PaddleController : public Controller {
 
 public:
-    explicit PlayerController(int id);
+    explicit PaddleController(int id);
     void move(int move, double delta);
 
 };

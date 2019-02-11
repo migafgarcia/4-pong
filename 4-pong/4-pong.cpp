@@ -51,15 +51,17 @@ int main() {
     Shaders::load_built_in_shaders();
 
 
-
-    PlayerController left = PlayerController(1);
-
-
     BallController ball = BallController(0);
+    PaddleController left = PaddleController(1);
+    PaddleController right = PaddleController(2);
+
+
 
     vector<GameObject *> objectsToDraw;
 
     objectsToDraw.push_back(ball.gameObject);
+    objectsToDraw.push_back(left.gameObject);
+    objectsToDraw.push_back(right.gameObject);
 
     for (GameObject *object: objectsToDraw) {
         object->init_buffer_data();
