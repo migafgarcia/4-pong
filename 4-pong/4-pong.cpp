@@ -7,7 +7,9 @@
 #include "Gravity.h"
 #include "shaders/Shaders.h"
 #include "game_objects/GameObject.h"
-#include "controllers/HumanPlayer.h"
+#include "controllers/Controller.h"
+#include "controllers/PaddleController.h"
+#include "controllers/BallController.h"
 
 #include <GLFW/glfw3.h>
 #include <iostream>
@@ -48,19 +50,21 @@ int main() {
 
     Shaders::load_built_in_shaders();
 
-    GameObject left = GameObject(1, glm::highp_dvec2(-0.95f, 0), glm::highp_dvec2(0.03f, 0.25f));
-    GameObject right = GameObject(2, glm::highp_dvec2(0.95f, 0), glm::highp_dvec2(0.03f, 0.25f));
-    GameObject ball = GameObject(0, glm::highp_dvec2(0, 0), glm::highp_dvec2(0.05f, 0.05f));
 
-    vector<GameObject *> players;
 
-    players.push_back(&right);
-    players.push_back(&left);
-    players.push_back(&ball);
+    PlayerController left = PlayerController(1);
 
-    for (GameObject *object: players) {
+
+    BallController ball = BallController(0);
+
+    vector<GameObject *> objectsToDraw;
+
+    objectsToDraw.push_back(ball.gameObject);
+
+    for (GameObject *object: objectsToDraw) {
         object->init_buffer_data();
     }
+
 
     double last_time = glfwGetTime();
 
@@ -77,12 +81,12 @@ int main() {
         double time = glfwGetTime();
         double delta = time - last_time;
 
+        ball.move(delta);
 
-
-
-        for (GameObject *object: players) {
+        for (GameObject *object: objectsToDraw) {
             object->draw();
         }
+
 
         last_time = time;
 
@@ -90,7 +94,7 @@ int main() {
         glfwPollEvents();
     }
 
-    for (GameObject *object: players) {
+    for (GameObject *object: objectsToDraw) {
         object->delete_buffer_data();
     }
 

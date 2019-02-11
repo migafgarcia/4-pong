@@ -3,3 +3,5 @@
 //
 
 #include "Controller.h"
+
+Controller::Controller(int id) : id(id) {}

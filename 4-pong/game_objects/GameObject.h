@@ -13,11 +13,10 @@ private:
     unsigned int VBO, VAO, EBO;
 
 public:
-    int id;
 	glm::highp_dvec2 position;
 	glm::highp_dvec2 size;
 
-    GameObject(int player_id, glm::highp_dvec2 &position, glm::highp_dvec2 &size) : id(player_id), position(
+    GameObject(glm::highp_dvec2 &position, glm::highp_dvec2 &size) : position(
             position), size(size) {}
 
     void init_buffer_data();
