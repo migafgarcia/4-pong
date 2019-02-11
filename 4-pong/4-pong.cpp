@@ -4,10 +4,10 @@
 #include "4-pong.h"
 #include <glad/glad.h>
 #include "static.h"
-#include "Player.h"
-#include "Ball.h"
 #include "Gravity.h"
 #include "shaders/Shaders.h"
+#include "game_objects/GameObject.h"
+#include "controllers/HumanPlayer.h"
 
 #include <GLFW/glfw3.h>
 #include <iostream>
@@ -15,28 +15,17 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <vector>
+#include <map>
 
 using namespace std;
-
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
     glViewport(0, 0, width, height);
 }
 
-void processInput(GLFWwindow *window) {
+void process_global_input(GLFWwindow *window) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
-}
-
-int processMovement(GLFWwindow *window) {
-
-    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
-        return 1;
-    } else if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
-        return -1;
-    } else {
-        return 0;
-    }
 }
 
 int main() {
@@ -59,18 +48,17 @@ int main() {
 
     Shaders::load_built_in_shaders();
 
-    Player left = Player(glm::highp_dvec2(-0.95f, 0), glm::highp_dvec2(0, 0), VERTICAL, 1.0f);
-    Player right = Player(glm::highp_dvec2(0.95f, 0), glm::highp_dvec2(0, 0), VERTICAL, 1.0f);
-    Ball ball = Ball(glm::highp_dvec2(0, 0), glm::highp_dvec2(-1.0f, 0.9f), 1.0f);
+    GameObject left = GameObject(1, glm::highp_dvec2(-0.95f, 0), glm::highp_dvec2(0.03f, 0.25f));
+    GameObject right = GameObject(2, glm::highp_dvec2(0.95f, 0), glm::highp_dvec2(0.03f, 0.25f));
+    GameObject ball = GameObject(0, glm::highp_dvec2(0, 0), glm::highp_dvec2(0.05f, 0.05f));
 
+    vector<GameObject *> players;
 
-    vector<GameObject *> objects;
+    players.push_back(&right);
+    players.push_back(&left);
+    players.push_back(&ball);
 
-    objects.push_back(&right);
-    objects.push_back(&left);
-    objects.push_back(&ball);
-
-    for (GameObject *object: objects) {
+    for (GameObject *object: players) {
         object->init_buffer_data();
     }
 
@@ -78,8 +66,7 @@ int main() {
 
     while (!glfwWindowShouldClose(window)) {
 
-        processInput(window);
-        int move = processMovement(window);
+        process_global_input(window);
 
         glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
@@ -90,33 +77,12 @@ int main() {
         double time = glfwGetTime();
         double delta = time - last_time;
 
-        left.update_direction(0.0f, move);
-        right.update_direction(0.0f, move);
 
 
-        for (GameObject *object: objects) {
-            object->update_position(delta);
 
-            bool x_bounds = object->check_x_bounds();
-            bool y_bounds = object->check_y_bounds();
-
-            if (Player *p = dynamic_cast<Player *>(object)) {
-
-                bool collision = p->check_collision(ball);
-                if (collision) {
-                    ball.invert_x_direction();
-                }
-            } else if (Ball *b = dynamic_cast<Ball *>(object)) {
-                if (x_bounds)
-                    b->update_position(0, 0);
-                if (y_bounds)
-                    b->invert_y_direction();
-
-            }
-
+        for (GameObject *object: players) {
             object->draw();
         }
-
 
         last_time = time;
 
@@ -124,7 +90,7 @@ int main() {
         glfwPollEvents();
     }
 
-    for (GameObject *object: objects) {
+    for (GameObject *object: players) {
         object->delete_buffer_data();
     }
 
