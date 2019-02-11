@@ -17,3 +17,6 @@ const float VERTICES[] = {
 		-1.0f,  1.0f, 0.0f   // top left
 };
 
+#define M_PI_2 1.57079632679489661923
+#define M_PI 3.14159265358979323846
+#define M_2_PI 6.28318530718

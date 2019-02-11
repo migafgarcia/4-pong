@@ -5,7 +5,6 @@
 
 
 #include "../game_objects/GameObject.h"
-#include <math.h>
 class Controller {
 
 public:

@@ -1,7 +1,6 @@
 
 #include "PaddleController.h"
-#define _USE_MATH_DEFINES
-#include <math.h>
+
 PlayerController::PlayerController(int id) : Controller(id) {
     speed = 1.0f;
 

@@ -2,8 +2,6 @@
 
 #include "BallController.h"
 #include <random>
-#define _USE_MATH_DEFINES
-#include <math.h>
 
 BallController::BallController(int id) : Controller(id) {
 

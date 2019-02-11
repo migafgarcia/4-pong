@@ -5,4 +5,3 @@ add_executable(4-pong 4-pong.cpp game_objects/GameObject.cpp shaders/Shaders.cpp
 target_link_libraries(4-pong glfw)
 target_link_libraries(4-pong glm)
 target_link_libraries(4-pong glad)
-target_link_libraries(4-pong m)
