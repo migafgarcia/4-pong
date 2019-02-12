@@ -7,10 +7,11 @@ BallController::BallController(int id) : Controller(id) {
 
     if(id != 0)
         throw "ID of ball must be 0";
-
-    std::uniform_real_distribution<double> unif(0, M_2_PI);
+    std::mt19937 rng;
+    rng.seed(std::random_device()());
+    std::uniform_real_distribution<double> unif(0, M_PI);
     std::default_random_engine re;
-    direction = unif(re);
+    direction = unif(rng) ;
     speed = 1.0f;
     gameObject = new GameObject(glm::highp_dvec2(0, 0), glm::highp_dvec2(0.05f, 0.05f));
 }

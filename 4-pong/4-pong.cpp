@@ -11,6 +11,8 @@
 #include "controllers/PaddleController.h"
 #include "controllers/BallController.h"
 #include "players/HumanPlayer.h"
+#include "Collisions.h"
+#include "players/AiPlayer.h"
 
 #include <GLFW/glfw3.h>
 #include <iostream>
@@ -53,8 +55,9 @@ int main() {
 
 
     map<int,Player *> players;
-    players[1] = new HumanPlayer(1, window, GLFW_KEY_UP, GLFW_KEY_DOWN);
-    players[2] = new HumanPlayer(2, window, GLFW_KEY_W, GLFW_KEY_S);
+//    players[1] = new HumanPlayer(1, window, GLFW_KEY_UP, GLFW_KEY_DOWN);
+    players[2] = new AiPlayer(2);
+    players[1] = new AiPlayer(1);
 
     vector<Controller *> controllers;
     controllers.push_back(new BallController(0));
@@ -62,11 +65,11 @@ int main() {
     controllers.push_back(new PaddleController(2));
 
 
-    map<int, glm::highp_dvec2> positionsMap;
+    map<int, glm::highp_dvec2*> positionsMap;
 
     for (Controller *controller: controllers) {
         controller->gameObject->init_buffer_data();
-        positionsMap[controller->id] = controller->gameObject->position;
+        positionsMap[controller->id] = &controller->gameObject->position;
     }
 
 
@@ -95,9 +98,12 @@ int main() {
                 int move = players[controller->id]->next_move(positionsMap);
 
                 pc->move(move, delta);
+                Collisions::handle_bounds(pc);
+                Collisions::handle_collision(pc, dynamic_cast<BallController*>(controllers[0]));
             }
             else if(auto * bc = dynamic_cast<BallController*>(controller)) {
                 bc->move(delta);
+                Collisions::handle_bounds(bc);
             }
             else {
                 throw "Error";

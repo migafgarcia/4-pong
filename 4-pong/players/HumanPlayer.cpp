@@ -11,7 +11,7 @@ HumanPlayer::HumanPlayer(int player_id, GLFWwindow *window, int positive_key, in
                                                                                                   negative_key(
                                                                                                           negative_key) {}
 
-int HumanPlayer::next_move(std::map<int, glm::highp_dvec2> &positions) {
+int HumanPlayer::next_move(std::map<int, glm::highp_dvec2*> &positions) {
     return process_input();
 }
 

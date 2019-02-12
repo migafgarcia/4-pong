@@ -13,7 +13,7 @@ class AiPlayer: public Player {
 public:
     AiPlayer(int player_id);
 
-    int next_move(std::map<int, glm::highp_dvec2> &positions) override;
+    int next_move(std::map<int, glm::highp_dvec2*> &positions) override;
 };
 
 

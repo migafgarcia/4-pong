@@ -22,7 +22,7 @@ private:
 public:
     HumanPlayer(int player_id, GLFWwindow *window, int positive_key, int negative_key);
 
-    int next_move(std::map<int, glm::highp_dvec2> &positions) override;
+    int next_move(std::map<int, glm::highp_dvec2*> &positions) override;
 
 };
 
