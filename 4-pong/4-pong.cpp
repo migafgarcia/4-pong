@@ -10,6 +10,7 @@
 #include "controllers/Controller.h"
 #include "controllers/PaddleController.h"
 #include "controllers/BallController.h"
+#include "players/HumanPlayer.h"
 
 #include <GLFW/glfw3.h>
 #include <iostream>
@@ -51,24 +52,28 @@ int main() {
     Shaders::load_built_in_shaders();
 
 
-    BallController ball = BallController(0);
-    PaddleController left = PaddleController(1);
-    PaddleController right = PaddleController(2);
+    map<int,Player *> players;
+    players[1] = new HumanPlayer(1, window, GLFW_KEY_UP, GLFW_KEY_DOWN);
+    players[2] = new HumanPlayer(2, window, GLFW_KEY_W, GLFW_KEY_S);
+
+    vector<Controller *> controllers;
+    controllers.push_back(new BallController(0));
+    controllers.push_back(new PaddleController(1));
+    controllers.push_back(new PaddleController(2));
 
 
+    map<int, glm::highp_dvec2> positionsMap;
 
-    vector<GameObject *> objectsToDraw;
-
-    objectsToDraw.push_back(ball.gameObject);
-    objectsToDraw.push_back(left.gameObject);
-    objectsToDraw.push_back(right.gameObject);
-
-    for (GameObject *object: objectsToDraw) {
-        object->init_buffer_data();
+    for (Controller *controller: controllers) {
+        controller->gameObject->init_buffer_data();
+        positionsMap[controller->id] = controller->gameObject->position;
     }
 
 
+
     double last_time = glfwGetTime();
+
+
 
     while (!glfwWindowShouldClose(window)) {
 
@@ -83,10 +88,22 @@ int main() {
         double time = glfwGetTime();
         double delta = time - last_time;
 
-        ball.move(delta);
 
-        for (GameObject *object: objectsToDraw) {
-            object->draw();
+        for (Controller *controller: controllers) {
+            if(auto * pc = dynamic_cast<PaddleController*>(controller))
+            {
+                int move = players[controller->id]->next_move(positionsMap);
+
+                pc->move(move, delta);
+            }
+            else if(auto * bc = dynamic_cast<BallController*>(controller)) {
+                bc->move(delta);
+            }
+            else {
+                throw "Error";
+            }
+
+            controller->gameObject->draw();
         }
 
 
@@ -96,8 +113,8 @@ int main() {
         glfwPollEvents();
     }
 
-    for (GameObject *object: objectsToDraw) {
-        object->delete_buffer_data();
+    for (Controller *controller: controllers) {
+        controller->gameObject->delete_buffer_data();
     }
 
     glfwTerminate();

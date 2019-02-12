@@ -18,6 +18,8 @@ public:
 
     Controller(int id);
 
+    virtual ~Controller() {};
+
 };
 
 

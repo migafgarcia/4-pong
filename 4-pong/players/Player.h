@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef INC_4_PONG_CONTROLLER_H
-#define INC_4_PONG_CONTROLLER_H
+#ifndef INC_4_PONG_PLAYER_H
+#define INC_4_PONG_PLAYER_H
 
 
 #include <glm/glm.hpp>

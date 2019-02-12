@@ -9,10 +9,10 @@ PaddleController::PaddleController(int id) : Controller(id) {
         direction = M_PI_2;
     } else if (id == 2) {
         gameObject = new GameObject(glm::highp_dvec2(0.95f, 0), glm::highp_dvec2(0.03f, 0.25f));
-        direction = M_PI;
+        direction = M_PI_2;
     } else if (id == 3) {
         gameObject = new GameObject(glm::highp_dvec2(0, 0.95f), glm::highp_dvec2(0.25f, 0.03f));
-        direction = M_PI_2;
+        direction = M_PI;
     } else if (id == 4) {
         gameObject = new GameObject(glm::highp_dvec2(0, -0.95f), glm::highp_dvec2(0.25f, 0.03f));
         direction = M_PI;
@@ -21,7 +21,6 @@ PaddleController::PaddleController(int id) : Controller(id) {
 }
 
 void PaddleController::move(int move, double delta) {
-    double d = move * direction;
-    gameObject->position.x += cos(d) * speed * delta;
-    gameObject->position.y += sin(d) * speed * delta;
+    gameObject->position.x += cos(direction) * speed * delta * move;
+    gameObject->position.y += sin(direction) * speed * delta * move;
 }
