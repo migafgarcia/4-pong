@@ -56,13 +56,20 @@ int main() {
 
     map<int,Player *> players;
 //    players[1] = new HumanPlayer(1, window, GLFW_KEY_UP, GLFW_KEY_DOWN);
-    players[2] = new AiPlayer(2);
+//    players[2] = new HumanPlayer(2, window, GLFW_KEY_W, GLFW_KEY_S);
+
     players[1] = new AiPlayer(1);
+    players[2] = new AiPlayer(2);
+    players[3] = new AiPlayer(3);
+    players[4] = new AiPlayer(4);
+
 
     vector<Controller *> controllers;
     controllers.push_back(new BallController(0));
     controllers.push_back(new PaddleController(1));
     controllers.push_back(new PaddleController(2));
+//    controllers.push_back(new PaddleController(3));
+//    controllers.push_back(new PaddleController(4));
 
 
     map<int, glm::highp_dvec2*> positionsMap;

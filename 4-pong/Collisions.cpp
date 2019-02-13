@@ -17,19 +17,6 @@ void Collisions::handle_collision(PaddleController *paddle, BallController *ball
     double ball_x_min = ball->gameObject->position.x - ball->gameObject->size.x;
     double ball_y_min = ball->gameObject->position.y - ball->gameObject->size.y;
 
-    double c_x_max = paddle_x_max < ball_x_max ? paddle_x_max : ball_x_max;
-    double c_x_min = paddle_x_min > ball_x_min ? paddle_x_min : ball_x_min;
-
-    double c_y_max = paddle_y_max < ball_y_max ? paddle_y_max : ball_x_max;
-    double c_y_min = paddle_y_min > ball_y_min ? paddle_y_min : ball_y_min;
-
-
-    double x_diff = abs(c_x_max - c_x_min);
-    double y_diff = abs(c_y_max - c_y_min);
-
-
-
-
     bool collision_x = ball_x_min >= paddle_x_min && ball_x_min <= paddle_x_max;
     bool collision_x_2 = ball_x_max >= paddle_x_min && ball_x_max <= paddle_x_max;
 
@@ -39,15 +26,33 @@ void Collisions::handle_collision(PaddleController *paddle, BallController *ball
     bool collision = (collision_x || collision_x_2) && (collision_y || collision_y_2);
 
     if(collision) {
-//        ball->speed += 0.1f;
-        if(x_diff > y_diff) { // Horizontal collision
-            ball->direction = -ball->direction;
+        double max_x_diff = paddle->gameObject->size.x + ball->gameObject->size.x;
+        double x_diff = (paddle->gameObject->position.x - ball->gameObject->position.x) / max_x_diff;
 
-        }
-        else { // Vertical collision
+        double max_y_diff = paddle->gameObject->size.y + ball->gameObject->size.y;
+        double y_diff = (paddle->gameObject->position.y - ball->gameObject->position.y) / max_y_diff;
+
+        if(paddle->id == 1) {
+            ball->gameObject->position.x = paddle->gameObject->position.x + paddle->gameObject->size.x + ball->gameObject->size.x;
             ball->direction = M_PI - ball->direction;
-
+            ball->direction -= y_diff * (M_PI_2);
         }
+        else if(paddle->id == 2) {
+            ball->gameObject->position.x = paddle->gameObject->position.x - paddle->gameObject->size.x - ball->gameObject->size.x;
+            ball->direction = M_PI - ball->direction;
+            ball->direction -= y_diff * (M_PI_2);
+        }
+        else if(paddle->id == 3) {
+            ball->gameObject->position.y = paddle->gameObject->position.y - paddle->gameObject->size.y - ball->gameObject->size.y;
+            ball->direction = -ball->direction;
+            ball->direction -= x_diff * (M_PI_2);
+        }
+        else if(paddle->id == 4) {
+            ball->gameObject->position.y = paddle->gameObject->position.y + paddle->gameObject->size.y + ball->gameObject->size.y;
+            ball->direction = -ball->direction;
+            ball->direction -= x_diff * (M_PI_2);
+        }
+
     }
 
 }
