@@ -2,7 +2,6 @@
 //
 
 #include "4-pong.h"
-#include <glad/glad.h>
 #include "static.h"
 #include "Gravity.h"
 #include "shaders/Shaders.h"
@@ -13,6 +12,7 @@
 #include "players/HumanPlayer.h"
 #include "Collisions.h"
 #include "players/AiPlayer.h"
+#include <../glad/glad.h>
 
 #include <GLFW/glfw3.h>
 #include <iostream>
@@ -55,10 +55,10 @@ int main() {
 
 
     map<int,Player *> players;
-//    players[1] = new HumanPlayer(1, window, GLFW_KEY_UP, GLFW_KEY_DOWN);
+    players[1] = new HumanPlayer(1, window, GLFW_KEY_UP, GLFW_KEY_DOWN);
 //    players[2] = new HumanPlayer(2, window, GLFW_KEY_W, GLFW_KEY_S);
 
-    players[1] = new AiPlayer(1);
+//    players[1] = new AiPlayer(1);
     players[2] = new AiPlayer(2);
     players[3] = new AiPlayer(3);
     players[4] = new AiPlayer(4);
